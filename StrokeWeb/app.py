@@ -24,6 +24,7 @@ data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type
 X = None
 y = data.iloc[:,-1]
 
+X_train, X_test, y_train, y_test = None, None, None, None
 choosed_feature = None
 model = None
 
@@ -107,7 +108,7 @@ def index():
 
 @app.route('/chooseFeatureM', methods=['POST','GET'])
 def chooseFeatureM():
-    global model, table_name, table, choosed_model, choosed_feature, accuracy, X_train, X_test, y_train, y_test, new_table
+    global model, table_name, table, choosed_model, choosed_feature, accuracy, new_table
 
     choosed_feature = request.form.getlist('feature')
 
@@ -143,9 +144,7 @@ def chooseFeatureM():
     for i in range(len(pred)):
         temp = np.append(table[i], y_test[i])
         new_table.append(np.append(temp, pred[i]))
-
-    print(new_table)
-    
+        
     return render_template("home.html", 
     cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
     listModel = ip_listModel, accuracy = accuracy, model = choosed_model, 
