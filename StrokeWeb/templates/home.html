@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<!-- Coding by CodingLab | www.codinglabweb.com -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <title>Predict Stroke</title>
+</head>
+
+<body>
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <div class="text logo-text">
+                    <span class="name">Predict Stroke</span>
+                    <span class="profession">With {{model}} model</span>
+                </div>
+            </div>
+
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+        <form action="/chooseFeatureM" method="post">
+            <div class="menu-bar">
+                <div class="menu">
+                    <li class="nav-link">
+                        <span class="text nav-text">Chọn Features</span>
+                    </li>
+
+                    <ul class="menu-links">
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 1" name=feature value='heart_disease' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 1">Tiền sử bệnh tim({{cor_hd}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 2" name=feature value='avg_glucose_level' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 2">Lượng đường trong máu({{cor_agl}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 3" name=feature value='age' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 3">Tuổi({{cor_age}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 4" name=feature value='Residence_type' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 4">Khu vực sống({{cor_rt}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 5" name=feature value='smoking_status' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 5">Tình trạng hút thuốc({{cor_st}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 6" name=feature value='bmi' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 6">Hệ số BMI({{cor_bmi}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 7" name=feature value='hypertension' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 7">Tăng huyết áp({{cor_h}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 8" name=feature value='work_type' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 8">Loại công việc({{cor_wt}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 9" name=feature value='gender' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 9">Giới tính({{cor_gd}})</label>
+                            </span>
+                        </li>
+
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                                <input type="checkbox" class="btn-check" id="btn-check-2-outlined 10" name=feature value='ever_married' autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="btn-check-2-outlined 10">Tình trạng kết hôn({{cor_em}})</label>
+                            </span>
+                        </li>
+                    </ul>
+                    <li class="nav-link">
+                        <span class="text nav-text">Chọn Model</span>
+                    </li>
+                    <ul class="menu-links">
+                        <li class="nav-link">
+                            <span class="text nav-text">
+                            <select name="modelselect" class="selectpicker form-control">
+                                {% for o in listModel %}
+                                <option value="{{o}}">{{o}}</option>
+                                {% endfor %}
+                            </select>
+                            </span>
+                        </li>
+                    </ul>
+                    <li class="nav-link">
+                        <span class="text nav-text">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </span>
+                    </li>
+                </div>
+            </div>
+        </form>
+    </nav>
+
+    <section class="home">
+        <div class="text">{{message}}</div>
+        {% if model != null %}
+        <div class="text">{{model}} Model</div>
+        <div class="text">Model accuracy: {{accuracy}}%</div>
+        <div class="container col-md-5">
+            <div class="text">Predict stroke form</div>
+            <div class="card">
+                <div class="card-body">
+                    <form action="/submit" method="post">
+                        {% for i in choosed_feature %} {% if i == "heart_disease" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Tiền sử bệnh tim    :</span>
+                                <select name="hdselect" class="selectpicker form-control">
+                                    {% for o in hd %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% elif i == "avg_glucose_level" %}
+                        <fieldset class="form-group">
+                            <label>Lượng glucose trung bình trong máu (Trung bình 120 / milligrams trên deciliter)</label> <input type="number" step="0.01" value="{{aglip}}" class="form-control" name="aglip" required="required">mg/dL
+                        </fieldset>
+                        {% elif i == "age" %}
+                        <fieldset class="form-group">
+                            <label>Tuổi</label> <input type="number" step="0" value="{{ageip}}" class="form-control" name="ageip" required="required">
+                        </fieldset>
+                        {% elif i == "Residence_type" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Khu vực sống    :</span>
+                                <select name="rtselect" class="selectpicker form-control">
+                                    {% for o in rt %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                        </div>
+                        {% elif i == "smoking_status" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Trạng thái hút thuốc :</span>
+                                <select name="ssselect" class="selectpicker form-control">
+                                    {% for o in ss %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                        </div>
+                        {% elif i == "bmi" %}
+                        <fieldset class="form-group">
+                            <label>Hệ số khối lượng cơ thể</label> <input type="number" step="0.01" value="{{bmiip}}" class="form-control" name="bmiip" required="required">
+                        </fieldset>
+                        {% elif i == "hypertension" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Tiền sử tăng huyết áp :</span>
+                                <select name="hselect" class="selectpicker form-control">
+                                    {% for o in hp %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                        </div>
+                        {% elif i == "work_type" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Loại công việc :</span>
+                                <select name="wtselect" class="selectpicker form-control">
+                                    {% for o in wt %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                        </div>
+                        {% elif i == "gender" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Giới tính :</span>
+                                <select name="gdselect" class="selectpicker form-control">
+                                    {% for o in gd %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                        </div>
+                        {% elif i == "ever_married" %}
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">Đã cưới :</span>
+                                <select name="emselect" class="selectpicker form-control">
+                                    {% for o in em %}
+                                    <option value="{{o}}">{{o}}</option>
+                                    {% endfor %}
+                                  </select>
+                            </div>
+                        </div>
+                        {% endif %} {% endfor %}
+
+                        <button type="submit" class="btn btn-success">Predict</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <label>Dự đoán: {{ketqua}}</label>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <script>
+        const body = document.querySelector('body'),
+            sidebar = body.querySelector('nav'),
+            toggle = body.querySelector(".toggle"),
+            searchBtn = body.querySelector(".search-box"),
+            modeSwitch = body.querySelector(".toggle-switch"),
+            modeText = body.querySelector(".mode-text");
+
+
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+        })
+    </script>
+
+</body>
+
+</html>
