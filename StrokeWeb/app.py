@@ -3,6 +3,7 @@ from knn import Custom_KNN
 import numpy as np
 import mysql.connector
 import pandas as pd
+from bayes import NaiveBayes
 import math
 import func
 
@@ -12,8 +13,8 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
-    database="db_stroke"
+    passwd="1234",
+    database="iot"
     )
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
@@ -127,6 +128,10 @@ def chooseFeatureM():
         model = Custom_KNN(k=7)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
+    if choosed_model == 'Bayes':
+        model = NaiveBayes()
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        model.fit(X=X_train, y=y_train)
 
     pred = model.predict(X_test)
 
@@ -136,16 +141,17 @@ def chooseFeatureM():
     table_name.append('actual')
     table_name.append('predict')
     table = X_test
+    new_table = []
     for i in range(len(pred)):
-        np.append(table[i], y_test[i])
-        np.append(table[i], pred[i])
+        temp = np.append(table[i], y_test[i])
+        new_table.append(np.append(temp, pred[i]))
 
     return render_template("home.html", 
     cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
     listModel = ip_listModel, accuracy = accuracy, model = choosed_model, 
     choosed_feature = choosed_feature, 
     hd = hd, aglip = avg_glucose_level, ageip = age, rt = rt, ss = ss, bmiip = bmi, hp = hp, wt = wt, gd = gd, em = em, 
-    table_name = table_name)
+    table_name = table_name, data=new_table)
 
 @app.route('/submit', methods=['POST','GET'])
 def submit():
