@@ -16,7 +16,7 @@
     <title>Predict Stroke</title>
 </head>
 
-<body>
+<body style="background-color: var(--body-color);">
     <nav class="sidebar close">
         <header>
             <div class="image-text">
@@ -221,7 +221,7 @@
                         {% elif i == "ever_married" %}
                         <div class="form-group">
                             <div class="input-group">
-                                <span class="input-group-addon">Đã cưới :</span>
+                                <span class="input-group-addon">Tình trạng hôn nhân :</span>
                                 <select name="emselect" class="selectpicker form-control">
                                     {% for o in em %}
                                     <option value="{{o}}">{{o}}</option>
@@ -240,6 +240,25 @@
                     <label>Dự đoán: {{ketqua}}</label>
                 </div>
             </div>
+        </div>
+        {% endif %}
+        {% if data_table != [] %}
+        <div style="text-align: center; margin-top: 15px;">
+            <table style="border: 1px solid black; margin: auto; padding: 5px;">
+                <tr>
+                    {% for o in table_name %}
+                        <th style="border: 1px solid black; padding: 5px;">{{o}}</th>
+                    {% endfor %}
+                </tr>
+    
+                {% for x in range(data_table|length) %}
+                <tr>
+                    {% for y in data_table[x] %}
+                        <td style="border: 1px solid black; padding: 5px;">{{y}}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
         </div>
         {% endif %}
     </section>
