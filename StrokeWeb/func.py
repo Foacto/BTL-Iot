@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import math
 
 def shuffle_data(X, y):
@@ -22,9 +23,12 @@ def train_test_split_scratch(X, y, test_size=0.5, shuffle=True):
             y_train, y_test = y[:train_ratio].values, y[train_ratio:].values
             return X_train, X_test, y_train, y_test
 
-def normalize(X):
-    for column in X.columns:
-        X[column] = X[column]  / X[column].abs().max()
+def normalize(X, columns):
+    tmp = pd.DataFrame(X, columns=columns)
+    for column in tmp.columns:
+        tmp[column] = tmp[column]  / tmp[column].abs().max()
+
+    return tmp.values
 
 def cov(a, b):
     result = 0

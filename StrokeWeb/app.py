@@ -13,8 +13,8 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="1234",
-    database="iot"
+    passwd="",
+    database="db_stroke"
     )
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
@@ -124,16 +124,21 @@ def chooseFeatureM():
     choosed_model = request.form.get('modelselect')
     
     if choosed_model == 'KNN':
-        func.normalize(X)
         model = Custom_KNN(k=7)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        X_train = func.normalize(X_train, columns=choosed_feature)
+
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
         model = NaiveBayes()
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
 
-    pred = model.predict(X_test)
+    tmpX = X_test.copy()
+    if choosed_model == 'KNN':
+        tmpX = func.normalize(tmpX, columns=choosed_feature)
+
+    pred = model.predict(tmpX)
 
     accuracy = round(func.accuracy(y_test,pred) * 100)
 
