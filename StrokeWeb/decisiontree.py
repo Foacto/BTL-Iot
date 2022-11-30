@@ -99,7 +99,7 @@ class DecisionTree:
 
     def _split(self, X_column, split_thresh):
         left_idxs = np.argwhere(X_column <= split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị nhỏ hơn giá trị split_thresh và chuyển về dạng mảng 1 chiều
-        right_idxs = np.argwhere(X_column > split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị lớn hơn giá trị split_thresh
+        right_idxs = np.argwhere(X_column >= split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị lớn hơn giá trị split_thresh
         return left_idxs, right_idxs
 
     def _traverse_tree(self, x, node):
