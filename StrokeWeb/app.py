@@ -77,7 +77,7 @@ bmi = 24
 hp = ['Không', 'Có']
 wt = ['Riêng tư', 'Tự kinh doanh', 'Cán bộ nhà nước', 'Trẻ con', 'Chưa đi làm']
 gd = ['Nữ', 'Nam', 'Khác']
-em = ['Có', 'Không']
+em = ['Đã kết hôn', 'Chưa kết hôn']
 
 choosed_model = None
 choosed_feature = None
@@ -108,10 +108,9 @@ def index():
 
 @app.route('/chooseFeatureM', methods=['POST','GET'])
 def chooseFeatureM():
-    global model, table_name, table, choosed_model, choosed_feature, accuracy
+    global model, table_name, table, choosed_model, choosed_feature, accuracy, new_table
 
     choosed_feature = request.form.getlist('feature')
-    print(choosed_feature)
 
     X = data[choosed_feature]
     # print(X)
@@ -150,13 +149,13 @@ def chooseFeatureM():
     for i in range(len(pred)):
         temp = np.append(table[i], y_test[i])
         new_table.append(np.append(temp, pred[i]))
-
+        
     return render_template("home.html", 
     cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
     listModel = ip_listModel, accuracy = accuracy, model = choosed_model, 
     choosed_feature = choosed_feature, 
-    hd = hd, aglip = avg_glucose_level, ageip = age, rt = rt, ss = ss, bmiip = bmi, hp = hp, wt = wt, gd = gd, em = em, 
-    table_name = table_name, data=new_table)
+    hd = hd, aglip = avg_glucose_level, ageip = age, rt = rt, ss = ss, bmiip = bmi, hp = hp, wt = wt, gd = gd, em = em,
+    table_name = table_name, data_table=new_table)
 
 @app.route('/submit', methods=['POST','GET'])
 def submit():
@@ -308,18 +307,18 @@ def submit():
                 gd = ['Khác', 'Nữ', 'Nam']
         elif i == 'ever_married':
             selectem = request.form.get('emselect')
-            if selectem == 'Có':
+            if selectem == 'Đã kết hôn':
                 tmp = 1
                 if choosed_model == 'KNN':
                     tmp /= max_ever_married
                 var_X.append(tmp)
-                em = ['Có', 'Không']
+                em = ['Đã kết hôn', 'Chưa kết hôn']
             else:
                 tmp = 0
                 if choosed_model == 'KNN':
                     tmp /= max_ever_married
                 var_X.append(tmp)
-                em = ['Không', 'Có']
+                em = ['Chưa kết hôn', 'Đã kết hôn']
 
     predict = model.predict([var_X])
     predict = int(predict[0])
@@ -343,8 +342,7 @@ def submit():
     listModel = ip_listModel, accuracy = accuracy, model = choosed_model, 
     choosed_feature = choosed_feature, 
     hd = hd, aglip = avg_glucose_level, ageip = age, rt = rt, ss = ss, bmiip = bmi, hp = hp, wt = wt, gd = gd, em = em, table = table, 
-    table_name = table_name, ketqua = kq)
+    table_name = table_name, ketqua = kq, data_table=new_table)
 
 if __name__ == "__main__":
-    # app.run(host='26.174.124.172', port=5000)
     app.run()
