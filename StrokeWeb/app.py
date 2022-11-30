@@ -14,7 +14,7 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="1234",
+    passwd="123456",
     database="iot"
 )
 
