@@ -6,6 +6,7 @@ import pandas as pd
 from bayes import NaiveBayes
 import math
 import func
+from decisiontree import *
 
 app = Flask(__name__)
 
