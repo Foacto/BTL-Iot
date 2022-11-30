@@ -71,8 +71,11 @@ def accuracy(ground_truth, prediction):
 
 def precision(ground_truth, prediction):
     tp = true_positive(ground_truth, prediction)  
-    fp = false_positive(ground_truth, prediction)  
-    prec = tp/ (tp + fp)  
+    fp = false_positive(ground_truth, prediction)
+    if (tp + fp) == 0:
+        prec = 0
+    else:
+        prec = tp/ (tp + fp)  
     return prec
 
 def recall(ground_truth, prediction):
@@ -84,7 +87,10 @@ def recall(ground_truth, prediction):
 def f1(ground_truth, prediction):
     p = precision(ground_truth, prediction)
     r = recall(ground_truth, prediction)
-    f1_score = 2 * p * r/ (p + r) 
+    if (p + r) == 0:
+        f1_score = 0
+    else:
+        f1_score = 2 * p * r/ (p + r) 
     return f1_score
 
 def true_positive(ground_truth, prediction):
