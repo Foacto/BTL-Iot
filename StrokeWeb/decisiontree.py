@@ -34,13 +34,12 @@ class DecisionTree:
         self.root = self._grow_tree(X, y)
 
     def predict(self, X):
-        return np.array([self._traverse_tree(x, self.root) for x in X])
+        return np.array([self._traverse_tree(x, self.root) for x in X]) 
 
     def _grow_tree(self, X, y, depth=0):
         n_samples, n_features = X.shape
         # xac dinh so nhan co trong mang
         n_labels = len(np.unique(y))
-
         # điều kiện dừng
         if (
             depth >= self.max_depth
@@ -55,7 +54,7 @@ class DecisionTree:
 
         # chọn đường đi tốt nhất
         best_feat, best_thresh = self._best_criteria(X, y, feat_idxs)
-
+    
         # phát triển tiếp cây quyết định từ nút cha là các mảng vừa mới được chia
         left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
         left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
@@ -113,5 +112,8 @@ class DecisionTree:
 
     def _most_common_label(self, y):
         counter = Counter(y)
-        most_common = counter.most_common(1)[0][0]
-        return most_common
+        if(len(counter)!=0):
+            most_common = counter.most_common(1)[0][0]
+            return most_common
+        else:
+            return [0]
