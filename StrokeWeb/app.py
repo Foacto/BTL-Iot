@@ -13,9 +13,9 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
-    database="db_stroke"
-    )
+    passwd="1234",
+    database="iot"
+)
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
     smoking_status, bmi, hypertension, work_type, gender, ever_married, \
@@ -97,9 +97,6 @@ max_work_type = data['work_type'].abs().max()
 max_gender = data['gender'].abs().max()
 max_ever_married = data['ever_married'].abs().max()
 
-# Bayes
-
-
 @app.route('/')
 def index():
     return render_template("home.html", 
@@ -140,6 +137,13 @@ def chooseFeatureM():
     pred = model.predict(tmpX)
 
     accuracy = round(func.accuracy(y_test,pred) * 100)
+    f1_score = round(func.f1(y_test,pred) * 100)
+    recall = round(func.recall(y_test,pred) * 100)
+    precision = round(func.precision(y_test,pred) * 100)
+    func.add_f1(f1_score)
+    func.add_acc(accuracy)
+    func.add_recall(recall)
+    func.add_precision(precision)
 
     table_name = choosed_feature
     table_name.append('actual')
