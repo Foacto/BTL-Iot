@@ -13,8 +13,8 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
-    database="db_stroke"
+    passwd="123456",
+    database="iot"
     )
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
