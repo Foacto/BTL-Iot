@@ -6,6 +6,7 @@ import pandas as pd
 from bayes import NaiveBayes
 import math
 import func
+from decisiontree import *
 
 app = Flask(__name__)
 
@@ -123,12 +124,15 @@ def chooseFeatureM():
         model = Custom_KNN(k=7)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
         X_train = func.normalize(X_train, columns=choosed_feature)
-
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
         model = NaiveBayes()
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
+    if choosed_model == 'Decision Tree':
+        model = DecisionTree(max_depth=10)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        model.fit(X_train,y_train)
 
     tmpX = X_test.copy()
     if choosed_model == 'KNN':
