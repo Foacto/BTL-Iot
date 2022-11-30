@@ -16,7 +16,7 @@ mydb = mysql.connector.connect(
     user="root",
     passwd="1234",
     database="iot"
-    )
+)
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
     smoking_status, bmi, hypertension, work_type, gender, ever_married, \
@@ -98,9 +98,6 @@ max_work_type = data['work_type'].abs().max()
 max_gender = data['gender'].abs().max()
 max_ever_married = data['ever_married'].abs().max()
 
-# Bayes
-
-
 @app.route('/')
 def index():
     return render_template("home.html", 
@@ -124,22 +121,33 @@ def chooseFeatureM():
     choosed_model = request.form.get('modelselect')
     
     if choosed_model == 'KNN':
-        func.normalize(X)
         model = Custom_KNN(k=7)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        X_train = func.normalize(X_train, columns=choosed_feature)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
         model = NaiveBayes()
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
-            func.normalize(X)
-            model = DecisionTree(max_depth=10)
-            X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
-            model.fit(X_train,y_train)
-    pred = model.predict(X_test)
+        model = DecisionTree(max_depth=10)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        model.fit(X_train,y_train)
+
+    tmpX = X_test.copy()
+    if choosed_model == 'KNN':
+        tmpX = func.normalize(tmpX, columns=choosed_feature)
+
+    pred = model.predict(tmpX)
 
     accuracy = round(func.accuracy(y_test,pred) * 100)
+    f1_score = round(func.f1(y_test,pred) * 100)
+    recall = round(func.recall(y_test,pred) * 100)
+    precision = round(func.precision(y_test,pred) * 100)
+    func.add_f1(f1_score)
+    func.add_acc(accuracy)
+    func.add_recall(recall)
+    func.add_precision(precision)
 
     table_name = choosed_feature
     table_name.append('actual')
