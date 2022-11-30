@@ -6,7 +6,7 @@ import mysql.connector
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="1234",
+    passwd="021000",
     database="iot"
 )
 
@@ -71,27 +71,30 @@ def accuracy(ground_truth, prediction):
 
 def precision(ground_truth, prediction):
     tp = true_positive(ground_truth, prediction)  
-    fp = false_positive(ground_truth, prediction)
-    if (tp + fp) == 0:
-        prec = 0
+    fp = false_positive(ground_truth, prediction)  
+    if((tp + fp)  == 0):
+        return 0
     else:
         prec = tp/ (tp + fp)  
-    return prec
+        return prec
 
 def recall(ground_truth, prediction):
     tp = true_positive(ground_truth, prediction)  
     fn = false_negative(ground_truth, prediction)  
-    prec = tp/ (tp + fn)  
-    return prec
+    if((tp + fn)==0):
+        return 0
+    else:
+        prec = tp/ (tp + fn)  
+        return prec
 
 def f1(ground_truth, prediction):
     p = precision(ground_truth, prediction)
     r = recall(ground_truth, prediction)
-    if (p + r) == 0:
-        f1_score = 0
+    if((p + r) ==0 ):
+        return 0
     else:
         f1_score = 2 * p * r/ (p + r) 
-    return f1_score
+        return f1_score
 
 def true_positive(ground_truth, prediction):
     tp = 0
