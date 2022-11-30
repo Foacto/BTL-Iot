@@ -131,7 +131,11 @@ def chooseFeatureM():
         model = NaiveBayes()
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
-
+    if choosed_model == 'Decision Tree':
+            func.normalize(X)
+            model = DecisionTree(max_depth=10)
+            X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+            model.fit(X_train,y_train)
     pred = model.predict(X_test)
 
     accuracy = round(func.accuracy(y_test,pred) * 100)
