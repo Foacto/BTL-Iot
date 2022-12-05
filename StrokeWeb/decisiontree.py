@@ -1,5 +1,7 @@
 import numpy as np
 from collections import Counter
+
+
 def entropy(y):
     hist = np.bincount(y)
     ps = hist / len(y)
@@ -18,6 +20,8 @@ class Node:
 
     def is_leaf_node(self):
         return self.value is not None
+
+
 class DecisionTree:
     def __init__(self, min_samples_split=2, max_depth=100, n_feats=None):
         self.min_samples_split = min_samples_split
@@ -26,15 +30,17 @@ class DecisionTree:
         self.root = None
         self.X_train = None
         self.y_train = None
+
     def fit(self, X, y):
         self.X_train = X
         self.y_train = y
-        self.n_feats = X.shape[1] if not self.n_feats else min(self.n_feats, X.shape[1])
+        self.n_feats = X.shape[1] if not self.n_feats else min(
+            self.n_feats, X.shape[1])
         # phat trien cay
         self.root = self._grow_tree(X, y)
 
     def predict(self, X):
-        return np.array([self._traverse_tree(x, self.root) for x in X]) 
+        return np.array([self._traverse_tree(x, self.root) for x in X])
 
     def _grow_tree(self, X, y, depth=0):
         n_samples, n_features = X.shape
@@ -54,7 +60,7 @@ class DecisionTree:
 
         # chọn đường đi tốt nhất
         best_feat, best_thresh = self._best_criteria(X, y, feat_idxs)
-    
+
         # phát triển tiếp cây quyết định từ nút cha là các mảng vừa mới được chia
         left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
         left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
@@ -65,6 +71,7 @@ class DecisionTree:
         best_gain = -1
         split_idx, split_thresh = None, None
         for feat_idx in feat_idxs:
+            # check error None value here
             X_column = X[:, feat_idx]
             thresholds = np.unique(X_column)
             for threshold in thresholds:
@@ -98,8 +105,14 @@ class DecisionTree:
         return ig
 
     def _split(self, X_column, split_thresh):
-        left_idxs = np.argwhere(X_column <= split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị nhỏ hơn giá trị split_thresh và chuyển về dạng mảng 1 chiều
-        right_idxs = np.argwhere(X_column >= split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị lớn hơn giá trị split_thresh
+        # if split_thresh == None:
+        #     split_thresh = 0
+
+        print(split_thresh)
+        # Lấy mảng chứa vị trí các phần tử có giá trị nhỏ hơn giá trị split_thresh và chuyển về dạng mảng 1 chiều
+        left_idxs = np.argwhere(X_column <= split_thresh).flatten()
+        # Lấy mảng chứa vị trí các phần tử có giá trị lớn hơn giá trị split_thresh
+        right_idxs = np.argwhere(X_column >= split_thresh).flatten()
         return left_idxs, right_idxs
 
     def _traverse_tree(self, x, node):
@@ -112,7 +125,7 @@ class DecisionTree:
 
     def _most_common_label(self, y):
         counter = Counter(y)
-        if(len(counter)!=0):
+        if (len(counter) != 0):
             most_common = counter.most_common(1)[0][0]
             return most_common
         else:

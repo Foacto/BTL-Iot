@@ -4,9 +4,9 @@ import numpy as np
 import mysql.connector
 import pandas as pd
 from bayes import NaiveBayes
-import math
 import func
 from decisiontree import *
+from random_forest import RandomForest
 
 app = Flask(__name__)
 
@@ -68,7 +68,7 @@ cor_work_type = round(cor_data['work_type'][0], 4)
 cor_gender = round(cor_data['gender'][0], 4)
 cor_ever_married = round(cor_data['ever_married'][0], 4)
 
-ip_listModel = ['KNN', 'Bayes', 'Decision Tree']
+ip_listModel = ['KNN', 'Bayes', 'Decision Tree', 'Random Forest']
 hd = ['Không', 'Có']
 avg_glucose_level = 120
 age = 20
@@ -97,6 +97,7 @@ max_hypertension = data['hypertension'].abs().max()
 max_work_type = data['work_type'].abs().max()
 max_gender = data['gender'].abs().max()
 max_ever_married = data['ever_married'].abs().max()
+
 
 @app.route('/')
 def index():
@@ -134,12 +135,14 @@ def chooseFeatureM():
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
         model = DecisionTree(max_depth=10)
-        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(
+            X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
-    if choosed_model == 'Decision Tree':
-        model = DecisionTree(max_depth=10)
-        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
-        model.fit(X_train,y_train)
+    if choosed_model == 'Random Forest':
+        model = RandomForest(n_trees=3, max_depth=10)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(
+            X, y, test_size=0.2, shuffle=True)
+        model.fit(X_train, y_train)
 
     tmpX = X_test.copy()
     if choosed_model == 'KNN':
@@ -147,10 +150,10 @@ def chooseFeatureM():
 
     pred = model.predict(tmpX)
 
-    accuracy = round(func.accuracy(y_test,pred) * 100)
-    f1_score = round(func.f1(y_test,pred) * 100)
-    recall = round(func.recall(y_test,pred) * 100)
-    precision = round(func.precision(y_test,pred) * 100)
+    accuracy = round(func.accuracy(y_test, pred) * 100)
+    f1_score = round(func.f1(y_test, pred) * 100)
+    recall = round(func.recall(y_test, pred) * 100)
+    precision = round(func.precision(y_test, pred) * 100)
     func.add_f1(f1_score)
     func.add_acc(accuracy)
     func.add_recall(recall)
