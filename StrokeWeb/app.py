@@ -4,9 +4,9 @@ import numpy as np
 import mysql.connector
 import pandas as pd
 from bayes import NaiveBayes
-import math
 import func
 from decisiontree import *
+from random_forest import RandomForest
 
 app = Flask(__name__)
 
@@ -23,7 +23,7 @@ data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type
     stroke FROM stroke_final LIMIT 1000", mydb)
 
 X = None
-y = data.iloc[:,-1]
+y = data.iloc[:, -1]
 
 X_train, X_test, y_train, y_test = None, None, None, None
 choosed_feature = None
@@ -68,7 +68,7 @@ cor_work_type = round(cor_data['work_type'][0], 4)
 cor_gender = round(cor_data['gender'][0], 4)
 cor_ever_married = round(cor_data['ever_married'][0], 4)
 
-ip_listModel = ['KNN','Bayes','Decision Tree']
+ip_listModel = ['KNN', 'Bayes', 'Decision Tree', 'Random Forest']
 hd = ['Không', 'Có']
 avg_glucose_level = 120
 age = 20
@@ -98,13 +98,15 @@ max_work_type = data['work_type'].abs().max()
 max_gender = data['gender'].abs().max()
 max_ever_married = data['ever_married'].abs().max()
 
+
 @app.route('/')
 def index():
-    return render_template("home.html", 
-    cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
-    listModel = ip_listModel)
+    return render_template("home.html",
+                           cor_hd=cor_heart_disease, cor_agl=cor_avg_glucose_level, cor_age=cor_age, cor_rt=cor_Residence_type, cor_st=cor_smoking_status, cor_bmi=cor_bmi, cor_h=cor_hypertension, cor_wt=cor_work_type, cor_gd=cor_gender, cor_em=cor_ever_married,
+                           listModel=ip_listModel)
 
-@app.route('/chooseFeatureM', methods=['POST','GET'])
+
+@app.route('/chooseFeatureM', methods=['POST', 'GET'])
 def chooseFeatureM():
     global model, table_name, table, choosed_model, choosed_feature, accuracy, new_table
 
@@ -114,25 +116,33 @@ def chooseFeatureM():
     # print(X)
 
     if len(choosed_feature) == 0:
-        return render_template("home.html", 
-        cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
-        listModel = ip_listModel, message = 'Choose atleast 1 feature before submit!')
+        return render_template("home.html",
+                               cor_hd=cor_heart_disease, cor_agl=cor_avg_glucose_level, cor_age=cor_age, cor_rt=cor_Residence_type, cor_st=cor_smoking_status, cor_bmi=cor_bmi, cor_h=cor_hypertension, cor_wt=cor_work_type, cor_gd=cor_gender, cor_em=cor_ever_married,
+                               listModel=ip_listModel, message='Choose atleast 1 feature before submit!')
 
     choosed_model = request.form.get('modelselect')
-    
+
     if choosed_model == 'KNN':
         model = Custom_KNN(k=7)
-        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(
+            X, y, test_size=0.2, shuffle=True)
         X_train = func.normalize(X_train, columns=choosed_feature)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
         model = NaiveBayes()
-        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(
+            X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
         model = DecisionTree(max_depth=10)
-        X_train, X_test, y_train, y_test = func.train_test_split_scratch(X, y, test_size=0.2, shuffle=True)
-        model.fit(X_train,y_train)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(
+            X, y, test_size=0.2, shuffle=True)
+        model.fit(X=X_train, y=y_train)
+    if choosed_model == 'Random Forest':
+        model = RandomForest(n_trees=3, max_depth=10)
+        X_train, X_test, y_train, y_test = func.train_test_split_scratch(
+            X, y, test_size=0.2, shuffle=True)
+        model.fit(X_train, y_train)
 
     tmpX = X_test.copy()
     if choosed_model == 'KNN':
@@ -140,10 +150,10 @@ def chooseFeatureM():
 
     pred = model.predict(tmpX)
 
-    accuracy = round(func.accuracy(y_test,pred) * 100)
-    f1_score = round(func.f1(y_test,pred) * 100)
-    recall = round(func.recall(y_test,pred) * 100)
-    precision = round(func.precision(y_test,pred) * 100)
+    accuracy = round(func.accuracy(y_test, pred) * 100)
+    f1_score = round(func.f1(y_test, pred) * 100)
+    recall = round(func.recall(y_test, pred) * 100)
+    precision = round(func.precision(y_test, pred) * 100)
     func.add_f1(f1_score)
     func.add_acc(accuracy)
     func.add_recall(recall)
@@ -157,15 +167,16 @@ def chooseFeatureM():
     for i in range(len(pred)):
         temp = np.append(table[i], y_test[i])
         new_table.append(np.append(temp, pred[i]))
-        
-    return render_template("home.html", 
-    cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
-    listModel = ip_listModel, accuracy = accuracy, model = choosed_model, 
-    choosed_feature = choosed_feature, 
-    hd = hd, aglip = avg_glucose_level, ageip = age, rt = rt, ss = ss, bmiip = bmi, hp = hp, wt = wt, gd = gd, em = em,
-    table_name = table_name, data_table=new_table)
 
-@app.route('/submit', methods=['POST','GET'])
+    return render_template("home.html",
+                           cor_hd=cor_heart_disease, cor_agl=cor_avg_glucose_level, cor_age=cor_age, cor_rt=cor_Residence_type, cor_st=cor_smoking_status, cor_bmi=cor_bmi, cor_h=cor_hypertension, cor_wt=cor_work_type, cor_gd=cor_gender, cor_em=cor_ever_married,
+                           listModel=ip_listModel, accuracy=accuracy, model=choosed_model,
+                           choosed_feature=choosed_feature,
+                           hd=hd, aglip=avg_glucose_level, ageip=age, rt=rt, ss=ss, bmiip=bmi, hp=hp, wt=wt, gd=gd, em=em,
+                           table_name=table_name, data_table=new_table)
+
+
+@app.route('/submit', methods=['POST', 'GET'])
 def submit():
     global data, hd, avg_glucose_level, age, rt, ss, bmi, hp, wt, gd, em
 
@@ -198,7 +209,7 @@ def submit():
             tmp = age
             if choosed_model == 'KNN':
                 tmp /= max_age
-            
+
             var_X.append(tmp)
         elif i == 'Residence_type':
             selectrt = request.form.get('rtselect')
@@ -268,31 +279,36 @@ def submit():
                 if choosed_model == 'KNN':
                     tmp /= max_work_type
                 var_X.append(tmp)
-                wt = ['Riêng tư', 'Tự kinh doanh', 'Cán bộ nhà nước', 'Trẻ con', 'Chưa đi làm']
+                wt = ['Riêng tư', 'Tự kinh doanh',
+                      'Cán bộ nhà nước', 'Trẻ con', 'Chưa đi làm']
             elif selectwt == 'Tự kinh doanh':
                 tmp = 1
                 if choosed_model == 'KNN':
                     tmp /= max_work_type
                 var_X.append(tmp)
-                wt = ['Tự kinh doanh', 'Riêng tư', 'Cán bộ nhà nước', 'Trẻ con', 'Chưa đi làm']
+                wt = ['Tự kinh doanh', 'Riêng tư',
+                      'Cán bộ nhà nước', 'Trẻ con', 'Chưa đi làm']
             elif selectwt == 'Cán bộ nhà nước':
                 tmp = 2
                 if choosed_model == 'KNN':
                     tmp /= max_work_type
                 var_X.append(tmp)
-                wt = ['Cán bộ nhà nước', 'Riêng tư', 'Tự kinh doanh', 'Trẻ con', 'Chưa đi làm']
+                wt = ['Cán bộ nhà nước', 'Riêng tư',
+                      'Tự kinh doanh', 'Trẻ con', 'Chưa đi làm']
             elif selectwt == 'Trẻ con':
                 tmp = 3
                 if choosed_model == 'KNN':
                     tmp /= max_work_type
                 var_X.append(tmp)
-                wt = ['Trẻ con', 'Riêng tư', 'Tự kinh doanh', 'Cán bộ nhà nước', 'Chưa đi làm']
+                wt = ['Trẻ con', 'Riêng tư', 'Tự kinh doanh',
+                      'Cán bộ nhà nước', 'Chưa đi làm']
             elif selectwt == 'Chưa đi làm':
                 tmp = 4
                 if choosed_model == 'KNN':
                     tmp /= max_work_type
                 var_X.append(tmp)
-                wt = ['Chưa đi làm', 'Riêng tư', 'Tự kinh doanh', 'Cán bộ nhà nước', 'Trẻ con']
+                wt = ['Chưa đi làm', 'Riêng tư', 'Tự kinh doanh',
+                      'Cán bộ nhà nước', 'Trẻ con']
         elif i == 'gender':
             selectgd = request.form.get('gdselect')
             if selectgd == 'Nữ':
@@ -337,7 +353,7 @@ def submit():
         kq = "Không có khả năng bị đột quỵ!"
 
     print(kq)
-        
+
     # model.X_train = np.append(model.X_train, [[heart_disease / max_hd, avg_glucose_level / max_agl, age / max_age, Residence_type / max_rt]], axis=0)
     # model.y_train = np.append(model.y_train, [[predict]], axis=None)
     # new_df = pd.DataFrame({'heart_disease':[heart_disease], 'avg_glucose_level':[avg_glucose_level], 'age':[age], 'Residence_type':[Residence_type], 'stroke':[predict]})
@@ -345,12 +361,13 @@ def submit():
     # update_corr_db(data=data)
     # update_sample_db(heart_disease, avg_glucose_level, age, Residence_type, stroke=predict)
 
-    return render_template("home.html", 
-    cor_hd = cor_heart_disease, cor_agl = cor_avg_glucose_level, cor_age = cor_age, cor_rt = cor_Residence_type, cor_st = cor_smoking_status, cor_bmi = cor_bmi, cor_h = cor_hypertension, cor_wt = cor_work_type, cor_gd = cor_gender, cor_em = cor_ever_married, 
-    listModel = ip_listModel, accuracy = accuracy, model = choosed_model, 
-    choosed_feature = choosed_feature, 
-    hd = hd, aglip = avg_glucose_level, ageip = age, rt = rt, ss = ss, bmiip = bmi, hp = hp, wt = wt, gd = gd, em = em, table = table, 
-    table_name = table_name, ketqua = kq, data_table=new_table)
+    return render_template("home.html",
+                           cor_hd=cor_heart_disease, cor_agl=cor_avg_glucose_level, cor_age=cor_age, cor_rt=cor_Residence_type, cor_st=cor_smoking_status, cor_bmi=cor_bmi, cor_h=cor_hypertension, cor_wt=cor_work_type, cor_gd=cor_gender, cor_em=cor_ever_married,
+                           listModel=ip_listModel, accuracy=accuracy, model=choosed_model,
+                           choosed_feature=choosed_feature,
+                           hd=hd, aglip=avg_glucose_level, ageip=age, rt=rt, ss=ss, bmiip=bmi, hp=hp, wt=wt, gd=gd, em=em, table=table,
+                           table_name=table_name, ketqua=kq, data_table=new_table)
+
 
 if __name__ == "__main__":
     app.run()
