@@ -139,7 +139,7 @@ def chooseFeatureM():
             X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Random Forest':
-        model = RandomForest(n_trees=3, max_depth=10)
+        model = RandomForest(n_trees=20, max_depth=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
         model.fit(X_train, y_train)

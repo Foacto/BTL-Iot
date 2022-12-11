@@ -97,7 +97,7 @@ class DecisionTree:
         return ig
 
     def _split(self, X_column, split_thresh):
-        print(split_thresh)
+        # print(split_thresh)
         left_idxs = np.argwhere(X_column <= split_thresh).flatten()
         right_idxs = np.argwhere(X_column >= split_thresh).flatten()
         return left_idxs, right_idxs
