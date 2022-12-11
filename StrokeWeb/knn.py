@@ -6,6 +6,7 @@ class Custom_KNN:
     def __init__(self, k):
         self.counterX = 0
         self.k = k
+        self.xac_suat_cuoi = 0
 
     def _khoangcach_euclideane(self, x1, x2):
         # Tìm khoảng cách giữa 2 mẫu
@@ -45,7 +46,7 @@ class Custom_KNN:
         ket_qua = Counter(k_nhan_gan_nhat).most_common(1)
 
         # Xác xuất dự đoán đúng
-        xac_suat = ket_qua[0][1] / self.k
-        # print(xac_suat)
+        self.xac_suat_cuoi = ket_qua[0][1] / self.k
+        # print(self.xac_suat_cuoi)
 
         return ket_qua[0][0]
