@@ -14,8 +14,8 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
-    database="db_stroke"
+    passwd="021000",
+    database="iot"
 )
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
@@ -28,6 +28,29 @@ y = data.iloc[:, -1]
 X_train, X_test, y_train, y_test = None, None, None, None
 choosed_feature = None
 model = None
+
+# # Định nghĩa các hàm
+# def update_corr_db():
+#     mycursor = mydb.cursor()
+#     # sql = "UPDATE corr SET gender = %s, age = %s, hypertension = %s, heart_disease = %s, ever_married = %s,\
+#     #         work_type = %s, Residence_type = %s, avg_glucose_level = %s, bmi = %s, smoking_status = %s WHERE stroke = 1"
+#     sql = "UPDATE corr SET heart_disease = %s, avg_glucose_level = %s, age = %s, Residence_type = %s WHERE stroke = 1"
+#     val = []
+#     for i in X.columns:
+#         val.append(float(func.Ccorr(data['stroke'], data[i])))
+
+#     mycursor.execute(sql, val)
+#     mydb.commit()
+#     print(mycursor.rowcount, "record updated.")
+
+# def update_sample_db(heart_disease, avg_glucose_level, age, Residence_type, stroke):
+#     mycursor = mydb.cursor()
+#     sql = "INSERT INTO stroke_final(heart_disease, avg_glucose_level, age, Residence_type, stroke) VALUES (%s, %s, %s, %s, %s)"
+#     val = [heart_disease, avg_glucose_level, age, Residence_type, stroke]
+
+#     mycursor.execute(sql, val)
+#     mydb.commit()
+#     print(mycursor.rowcount, "record inserted.")
 
 # Các var
 cor_data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, \
@@ -111,7 +134,7 @@ def chooseFeatureM():
             X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
-        model = DecisionTree(max_depth=10)
+        model = DecisionTree(chieu_sau_toida=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
@@ -330,6 +353,13 @@ def submit():
         kq = "Không có khả năng bị đột quỵ!"
 
     print(kq)
+
+    # model.X_train = np.append(model.X_train, [[heart_disease / max_hd, avg_glucose_level / max_agl, age / max_age, Residence_type / max_rt]], axis=0)
+    # model.y_train = np.append(model.y_train, [[predict]], axis=None)
+    # new_df = pd.DataFrame({'heart_disease':[heart_disease], 'avg_glucose_level':[avg_glucose_level], 'age':[age], 'Residence_type':[Residence_type], 'stroke':[predict]})
+    # data = pd.concat([data, new_df])
+    # update_corr_db(data=data)
+    # update_sample_db(heart_disease, avg_glucose_level, age, Residence_type, stroke=predict)
 
     return render_template("home.html",
                            cor_hd=cor_heart_disease, cor_agl=cor_avg_glucose_level, cor_age=cor_age, cor_rt=cor_Residence_type, cor_st=cor_smoking_status, cor_bmi=cor_bmi, cor_h=cor_hypertension, cor_wt=cor_work_type, cor_gd=cor_gender, cor_em=cor_ever_married,
