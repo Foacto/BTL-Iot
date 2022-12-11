@@ -14,7 +14,7 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="1234",
+    passwd="021000",
     database="iot"
 )
 
@@ -134,7 +134,7 @@ def chooseFeatureM():
             X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
-        model = DecisionTree(max_depth=10)
+        model = DecisionTree(chieu_sau_toida=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
