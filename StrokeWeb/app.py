@@ -7,6 +7,8 @@ from bayes import NaiveBayes
 import func
 from decisiontree import *
 from random_forest import RandomForest
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 app = Flask(__name__)
 
@@ -14,8 +16,8 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="021000",
-    database="iot"
+    passwd="",
+    database="db_stroke"
 )
 
 data = pd.read_sql("SELECT heart_disease, avg_glucose_level, age, Residence_type, \
@@ -99,11 +101,14 @@ def chooseFeatureM():
 
     choosed_model = request.form.get('modelselect')
 
+    sk_model = None
     if choosed_model == 'KNN':
+        sk_model = KNeighborsClassifier(n_neighbors=7)
         model = Custom_KNN(k=7)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
         X_train = func.normalize(X_train, columns=choosed_feature)
+        sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
         model = NaiveBayes()
@@ -111,9 +116,11 @@ def chooseFeatureM():
             X, y, test_size=0.2, shuffle=True)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
+        sk_model = DecisionTreeClassifier(max_depth=10)
         model = DecisionTree(chieu_sau_toida=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
+        sk_model.fit(X_train,y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Random Forest':
         model = RandomForest(n_trees=3, max_depth=10)
@@ -125,7 +132,10 @@ def chooseFeatureM():
     if choosed_model == 'KNN':
         tmpX = func.normalize(tmpX, columns=choosed_feature)
 
+    ske_pred = sk_model.predict(tmpX)
     pred = model.predict(tmpX)
+
+    print(round(func.accuracy(y_test, ske_pred) * 100))
 
     accuracy = round(func.accuracy(y_test, pred) * 100)
     f1_score = round(func.f1(y_test, pred) * 100)
