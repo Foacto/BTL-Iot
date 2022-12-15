@@ -7,7 +7,7 @@ mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     passwd="",
-    database="db_stroke"
+    database="iot"
 )
 
 
@@ -21,7 +21,7 @@ def shuffle_data(X, y):
 def train_test_split_scratch(X, y, test_size=0.5, shuffle=True):
     if shuffle:
         X, y = shuffle_data(X.values, y.values)
-        
+
         train_ratio = len(y) - int(len(y) * test_size)
         X_train, X_test = X[:train_ratio], X[train_ratio:]
         y_train, y_test = y[:train_ratio], y[train_ratio:]
