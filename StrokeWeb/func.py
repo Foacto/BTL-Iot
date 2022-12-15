@@ -6,8 +6,8 @@ import mysql.connector
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    passwd="",
-    database="db_stroke"
+    passwd="1234",
+    database="iot"
 )
 
 def shuffle_data(X, y):
