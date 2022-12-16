@@ -6,10 +6,11 @@ import pandas as pd
 from bayes import NaiveBayes
 import func
 from decisiontree import *
-from random_forest import RandomForest
+from random_forest import CustomRandomForest
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
 
 app = Flask(__name__)
 
@@ -109,24 +110,25 @@ def chooseFeatureM():
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
         X_train = func.normalize(X_train, columns=choosed_feature)
-        sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
         sk_model = GaussianNB()
         model = NaiveBayes()
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
-        sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
         sk_model = DecisionTreeClassifier(max_depth=10)
         model = DecisionTree(chieu_sau_toida=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
-        sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
+
     if choosed_model == 'Random Forest':
-        model = RandomForest(n_trees=20, max_depth=10)
+        sk_model = RandomForestClassifier(
+            n_estimators=20, max_depth=10, min_samples_leaf=2)
+
+        model = CustomRandomForest(n_decisiontrees=20, doSauToiDa=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
         model.fit(X_train, y_train)
@@ -135,10 +137,12 @@ def chooseFeatureM():
     if choosed_model == 'KNN':
         tmpX = func.normalize(tmpX, columns=choosed_feature)
 
+    sk_model.fit(X_train, y_train)
     ske_pred = sk_model.predict(tmpX)
     pred = model.predict(tmpX)
 
-    print(round(func.accuracy(y_test, ske_pred) * 100))
+    print('\nAccuracy of sklearn:', round(
+        func.accuracy(y_test, ske_pred) * 100), 'percent.\n')
 
     accuracy = round(func.accuracy(y_test, pred) * 100)
     f1_score = round(func.f1(y_test, pred) * 100)
@@ -342,7 +346,7 @@ def submit():
     else:
         kq = "Không có khả năng bị đột quỵ!"
 
-    print(kq)
+    print("\n", kq, "\n")
 
     return render_template("home.html",
                            cor_hd=cor_heart_disease, cor_agl=cor_avg_glucose_level, cor_age=cor_age, cor_rt=cor_Residence_type, cor_st=cor_smoking_status, cor_bmi=cor_bmi, cor_h=cor_hypertension, cor_wt=cor_work_type, cor_gd=cor_gender, cor_em=cor_ever_married,
