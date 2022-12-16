@@ -1,6 +1,7 @@
 import numpy as np
 from collections import Counter
 
+
 def entropy(y):
     mang_xuat_hien = Counter(y)
     entro = 0
@@ -10,6 +11,16 @@ def entropy(y):
         if (p > 0):
             entro = entro + p
     return -entro
+
+
+def gini(y):
+    mang_xuat_hien = Counter(y)
+    gini = 0
+    for i in mang_xuat_hien:
+        p = mang_xuat_hien[i]/len(y)
+        p = p*p
+        gini = gini + p
+    return 1-gini
 
 
 class DecisionTree:
@@ -48,10 +59,10 @@ class DecisionTree:
         la_phai = self.phat_trien(X[mang_phai, :], y[mang_phai], do_sau + 1)
         return self.La(feat_totnhat, nguong_totnhat, la_trai, la_phai)
 
-    def duong_di_totnhat(self, X, y, feat_idxs):
+    def duong_di_totnhat(self, X, y, mang_feat):
         gain_totnhat = -1
         vitri_feat_phanchia, nguong_phanchia = None, None
-        for i in feat_idxs:
+        for i in mang_feat:
             cot = X[:, i]
             mang_nguong = np.unique(cot)
             for nguong in mang_nguong:
@@ -64,12 +75,25 @@ class DecisionTree:
 
         return vitri_feat_phanchia, nguong_phanchia
 
-    def infor_gain(self, y, X_column, split_thresh):
+    def gini_index(self, y, X, nguong):
+        gini_cha = gini(y)
+        mang_trai, mang_phai = self.chia_mang(X, nguong)
+        tong_trai = len(mang_trai)
+        tong_phai = len(mang_phai)
+        tong = len(y)
+        gini_trai = gini(mang_trai)
+        gini_phai = gini(mang_phai)
+        gini = gini_cha - ((tong_trai/tong)*gini_trai +
+                           (tong_phai/tong)*gini_phai)
+
+        return gini
+
+    def infor_gain(self, y, X, nguong):
         # tính entropy tại nút cha
         gain = 0
         entropy_cha = self.entropy(y)
 
-        mang_trai, mang_phai = self.chia_mang(X_column, split_thresh)
+        mang_trai, mang_phai = self.chia_mang(X, nguong)
         tong_trai = len(mang_trai)
         tong_phai = len(mang_phai)
         if tong_trai == 0 or tong_phai == 0:
@@ -85,13 +109,13 @@ class DecisionTree:
 
         return gain
 
-    def chia_mang(self, X_column, split_thresh):
+    def chia_mang(self, X, nguong):
         mang_trai = []
         mang_phai = []
-        for i in range(len(X_column)):
-            if X_column[i] <= split_thresh:
+        for i in range(len(X)):
+            if X[i] <= nguong:
                 mang_trai.append(i)
-            if X_column[i] >= split_thresh:
+            if X[i] >= nguong:
                 mang_phai.append(i)
         return np.array(mang_trai), np.array(mang_phai)
 
