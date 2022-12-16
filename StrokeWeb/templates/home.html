@@ -37,7 +37,7 @@
 				<i class="bx bx-chevron-right toggle"></i>
 			</header>
 
-			<form action="/chooseFeatureM" method="post">
+			<form class="form" action="/chooseFeatureM" method="post">
 				<div class="menu-bar">
 					<div class="menu">
 						<li class="nav-link">
@@ -233,16 +233,16 @@
 			<div class="text">{{message}}</div>
 			{% if model != null %}
 			<div class="text">{{model}} Model</div>
-			<div class="text">Model accuracy: {{accuracy}}%</div>
+			<div class="text" style="color: #198754">Model accuracy: {{accuracy}}%</div>
 			<div class="container col-md-5">
-				<div class="text" style="text-align: center">Predict stroke form</div>
+				<div class="textab" style="text-align: center">Predict Stroke Form</div>
 				<div class="card">
 					<div class="card-body">
 						<form action="/submit" method="post">
 							{% for i in choosed_feature %} {% if i == "heart_disease" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Tiền sử bệnh tim :</span>
+									<span class="input-group-addon">Tiền sử bệnh tim: </span>
 									<select name="hdselect" class="selectpicker form-control">
 										{% for o in hd %}
 										<option value="{{o}}">{{o}}</option>
@@ -263,7 +263,7 @@
 									class="form-control"
 									name="aglip"
 									required="required"
-								/>mg/dL
+								/>
 							</fieldset>
 							{% elif i == "age" %}
 							<fieldset class="form-group">
@@ -280,7 +280,7 @@
 							{% elif i == "Residence_type" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Khu vực sống :</span>
+									<span class="input-group-addon">Khu vực sống: </span>
 									<select name="rtselect" class="selectpicker form-control">
 										{% for o in rt %}
 										<option value="{{o}}">{{o}}</option>
@@ -291,7 +291,7 @@
 							{% elif i == "smoking_status" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Trạng thái hút thuốc :</span>
+									<span class="input-group-addon">Trạng thái hút thuốc: </span>
 									<select name="ssselect" class="selectpicker form-control">
 										{% for o in ss %}
 										<option value="{{o}}">{{o}}</option>
@@ -314,7 +314,7 @@
 							{% elif i == "hypertension" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Tiền sử tăng huyết áp :</span>
+									<span class="input-group-addon">Tiền sử tăng huyết áp: </span>
 									<select name="hselect" class="selectpicker form-control">
 										{% for o in hp %}
 										<option value="{{o}}">{{o}}</option>
@@ -325,7 +325,7 @@
 							{% elif i == "work_type" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Loại công việc :</span>
+									<span class="input-group-addon">Loại công việc: </span>
 									<select name="wtselect" class="selectpicker form-control">
 										{% for o in wt %}
 										<option value="{{o}}">{{o}}</option>
@@ -336,7 +336,7 @@
 							{% elif i == "gender" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Giới tính :</span>
+									<span class="input-group-addon">Giới tính: </span>
 									<select name="gdselect" class="selectpicker form-control">
 										{% for o in gd %}
 										<option value="{{o}}">{{o}}</option>
@@ -347,7 +347,7 @@
 							{% elif i == "ever_married" %}
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon">Tình trạng hôn nhân :</span>
+									<span class="input-group-addon">Tình trạng hôn nhân: </span>
 									<select name="emselect" class="selectpicker form-control">
 										{% for o in em %}
 										<option value="{{o}}">{{o}}</option>
