@@ -1,119 +1,138 @@
 import numpy as np
 from collections import Counter
 def entropy(y):
-    hist = np.bincount(y)
-    ps = hist / len(y)
-    return -np.sum([p * np.log2(p) for p in ps if p > 0])
+        mang_xuat_hien = Counter(y)
+        entro = 0
+        for i in mang_xuat_hien:
+            p = mang_xuat_hien[i]/len(y)
+            p = p* np.log2(p)
+            if(p>0):
+                entro = entro+ p
+        return -entro
 
 
-class Node:
-    def __init__(
-        self, feature=None, threshold=None, left=None, right=None, *, value=None
-    ):
-        self.feature = feature
-        self.threshold = threshold
-        self.left = left
-        self.right = right
-        self.value = value
 
-    def is_leaf_node(self):
-        return self.value is not None
 class DecisionTree:
-    def __init__(self, min_samples_split=2, max_depth=100, n_feats=None):
-        self.min_samples_split = min_samples_split
-        self.max_depth = max_depth
-        self.n_feats = n_feats
-        self.root = None
+    def __init__(self, so_nhan_nhonhat=2, chieu_sau_toida=50, so_feats=None):
+        self.so_nhan_nhonhat = so_nhan_nhonhat
+        self.chieu_sau_toida = chieu_sau_toida
+        self.so_feats = so_feats
+        self.goc = None
         self.X_train = None
         self.y_train = None
+
+        
     def fit(self, X, y):
         self.X_train = X
         self.y_train = y
-        self.n_feats = X.shape[1] if not self.n_feats else min(self.n_feats, X.shape[1])
-        # phat trien cay
-        self.root = self._grow_tree(X, y)
+        if not self.so_feats:
+            self.so_feats = self.X_train.shape[1]
+        else:
+            self.so_feats = min(self.so_feats,self.X_train.shape[1])
+        self.goc = self.phat_trien(X,y)
 
-    def predict(self, X):
-        return np.array([self._traverse_tree(x, self.root) for x in X]) 
 
-    def _grow_tree(self, X, y, depth=0):
-        n_samples, n_features = X.shape
-        # xac dinh so nhan co trong mang
-        n_labels = len(np.unique(y))
-        # điều kiện dừng
-        if (
-            depth >= self.max_depth
-            or n_labels == 1
-            or n_samples < self.min_samples_split
-        ):
-            leaf_value = self._most_common_label(y)
-            return Node(value=leaf_value)
+    def phat_trien(self,X,y,do_sau=0):
+        so_mau, so_features = X.shape
+        so_nhan = len(np.unique(y))
+        # dieu kien dung
+        if(do_sau>=self.chieu_sau_toida or so_nhan == 1 or so_mau< self.so_nhan_nhonhat):
+            gt_cuoicung = self.phan_tu_xuat_hien_nhieu_nhat(y)
+            return self.La(gia_tri= gt_cuoicung)
+        
+        mang_feat = np.random.choice(so_features,self.so_feats,replace=False)
 
-        # tạo 1 sắp xếp ngẫu nhiêu các feature
-        feat_idxs = np.random.choice(n_features, self.n_feats, replace=False)
+        feat_totnhat , nguong_totnhat = self.duong_di_totnhat(X,y,mang_feat)
 
-        # chọn đường đi tốt nhất
-        best_feat, best_thresh = self._best_criteria(X, y, feat_idxs)
-    
-        # phát triển tiếp cây quyết định từ nút cha là các mảng vừa mới được chia
-        left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
-        left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
-        right = self._grow_tree(X[right_idxs, :], y[right_idxs], depth + 1)
-        return Node(best_feat, best_thresh, left, right)
+        mang_trai, mang_phai = self.chia_mang(X[:, feat_totnhat],nguong_totnhat)
+        la_trai = self.phat_trien(X[mang_trai, :],y[mang_trai],do_sau + 1)
+        la_phai = self.phat_trien(X[mang_phai, :], y[mang_phai], do_sau +1)
+        return self.La(feat_totnhat,nguong_totnhat, la_trai,la_phai)
+    def duong_di_totnhat(self, X, y, feat_idxs):
+        gain_totnhat = -1
+        vitri_feat_phanchia , nguong_phanchia = None,None
+        for i in feat_idxs:
+            cot = X[:, i]
+            mang_nguong = np.unique(cot)
+            for nguong in mang_nguong:
+                gain = self.infor_gain(y,cot,nguong)
 
-    def _best_criteria(self, X, y, feat_idxs):
-        best_gain = -1
-        split_idx, split_thresh = None, None
-        for feat_idx in feat_idxs:
-            X_column = X[:, feat_idx]
-            thresholds = np.unique(X_column)
-            for threshold in thresholds:
-                gain = self._information_gain(y, X_column, threshold)
+                if(gain>gain_totnhat):
+                    gain_totnhat = gain
+                    vitri_feat_phanchia = i
+                    nguong_phanchia = nguong
+                
+        return vitri_feat_phanchia, nguong_phanchia
 
-                if gain > best_gain:
-                    best_gain = gain
-                    split_idx = feat_idx
-                    split_thresh = threshold
-
-        return split_idx, split_thresh
-
-    def _information_gain(self, y, X_column, split_thresh):
+    def infor_gain(self, y, X_column, split_thresh):
         # tính entropy tại nút cha
-        parent_entropy = entropy(y)
+        gain = 0
+        entropy_cha = self.entropy(y)
 
-        # chia thành các lá
-        left_idxs, right_idxs = self._split(X_column, split_thresh)
-
-        if len(left_idxs) == 0 or len(right_idxs) == 0:
+        mang_trai , mang_phai = self.chia_mang(X_column,split_thresh)
+        tong_trai = len(mang_trai)
+        tong_phai = len(mang_phai)
+        if tong_trai==0 or tong_phai==0:
             return 0
+        tong = len(y)
+        entropy_trai = self.entropy(y[mang_trai])
+        entropy_phai = self.entropy(y[mang_phai])
 
-        # Tính entropy của nút con
-        n = len(y)
-        n_l, n_r = len(left_idxs), len(right_idxs)
-        e_l, e_r = entropy(y[left_idxs]), entropy(y[right_idxs])
-        child_entropy = (n_l / n) * e_l + (n_r / n) * e_r
+        entropy_la = (tong_trai/tong) * entropy_trai + (tong_phai/tong) * entropy_phai
 
-        # information gain is difference in loss before vs. after split
-        ig = parent_entropy - child_entropy
-        return ig
+        gain = entropy_cha - entropy_la
 
-    def _split(self, X_column, split_thresh):
-        left_idxs = np.argwhere(X_column <= split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị nhỏ hơn giá trị split_thresh và chuyển về dạng mảng 1 chiều
-        right_idxs = np.argwhere(X_column >= split_thresh).flatten() # Lấy mảng chứa vị trí các phần tử có giá trị lớn hơn giá trị split_thresh
-        return left_idxs, right_idxs
+        return gain
 
-    def _traverse_tree(self, x, node):
-        if node.is_leaf_node():
-            return node.value
+    def chia_mang(self, X_column, split_thresh):
+        mang_trai = []
+        mang_phai = []
+        for i in range (len(X_column)):
+            if X_column[i]<=split_thresh:
+                mang_trai.append(i)
+            if X_column[i]>=split_thresh:
+                mang_phai.append(i)
+        return np.array(mang_trai), np.array(mang_phai)
 
-        if x[node.feature] <= node.threshold:
-            return self._traverse_tree(x, node.left)
-        return self._traverse_tree(x, node.right)
+    def tim_ngon(self, x, node):
+        if node.ngon_cay():
+            return node.gia_tri
 
-    def _most_common_label(self, y):
+        if x[node.feature] <= node.nguong: # nếu giá trị nhỏ hơn ngưỡng thì đi bên trái
+            return self.tim_ngon(x, node.la_trai)
+        return self.tim_ngon(x, node.la_phai)
+    def predict(self, X):
+        mang_dudoan = []
+        for x in X:
+            mang_dudoan.append(self.tim_ngon(x,self.goc))
+        return np.array(mang_dudoan) 
+    def phan_tu_xuat_hien_nhieu_nhat(self, y):
         counter = Counter(y)
         if(len(counter)!=0):
-            most_common = counter.most_common(1)[0][0]
-            return most_common
+            xuat_hien = counter.most_common(1)[0][0]
+            return xuat_hien
         else:
             return [0]
+    class La:
+        def __init__(
+        self, feature=None, nguong=None, la_trai=None, la_phai=None, *, gia_tri=None
+        ):
+            self.feature = feature
+            self.nguong = nguong
+            self.la_trai = la_trai
+            self.la_phai = la_phai
+            self.gia_tri = gia_tri
+
+        def ngon_cay(self):
+            return self.gia_tri is not None
+
+
+
+
+
+
+
+    def entropy(self,y):
+        hist = np.bincount(y) # liệt kê các phần tử và số lần xuất hiện của nó
+        ps = hist / len(y) # tỉ lệ của các phần tử
+        return -np.sum([p * np.log2(p) for p in ps if p > 0])
