@@ -14,7 +14,7 @@ class NaiveBayes:
         #Giá trị trung bình của môĩ fearture ưng voi môi nhãn
         self.trungbinh = np.zeros((sl_nhan, sl_dactrung), dtype=np.float64)
         self.phuongsai = np.zeros((sl_nhan, sl_dactrung), dtype=np.float64)
-        self._priors = np.zeros(sl_nhan, dtype=np.float64)
+        self.tansuat_nhan = np.zeros(sl_nhan, dtype=np.float64)
 
         for chiso, giatri_nhan in enumerate(self.nhan):
             #Lâý các mâũ có nhãn băng vơi giá trị của tưng nhãn
@@ -23,22 +23,20 @@ class NaiveBayes:
             self.phuongsai[chiso, :] = X_c.var(axis=0)
             #Xác định tân suât của nhãn đó trong tâp dư liêu
             #X_c.shape[0] sô lương mâũ của nhãn
-            self._priors[chiso] = X_c.shape[0] / float(sl_mau)
+            self.tansuat_nhan[chiso] = X_c.shape[0] / float(sl_mau)
     
-    #X - more than 1 samples
     def predict(self, X):
-        y_pred = [self._predict(x) for x in X]
-        return np.array(y_pred)
+        dudoan = [self._predict(x) for x in X]
+        return np.array(dudoan)
 
     def _predict(self, x):
-        posteriors = []
-        # calculate posterior probability for each class
+        mang_xacsuat_nhan = []
+        # Tính xăc suât hâụ nghiêm cho các nhãn
         for idx, c in enumerate(self.nhan):
-            prior = np.log(self._priors[idx])
-            posterior = np.sum(np.log(self._pdf(idx, x))) + prior
-            posteriors.append(posterior)
-        # return class with highest posterior probability
-        return self.nhan[np.argmax(posteriors)]
+            xacsuat_nhan = np.sum(np.log(self._pdf(idx, x))) + np.log(self.tansuat_nhan[idx])
+            mang_xacsuat_nhan.append(xacsuat_nhan)
+        # Trả vê nhãn vơi giá trị xs hâụ nghiêm max
+        return self.nhan[np.argmax(mang_xacsuat_nhan)]
 
     def _pdf(self, class_idx, x):
         # print(x)
