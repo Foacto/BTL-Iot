@@ -9,6 +9,7 @@ from decisiontree import *
 from random_forest import RandomForest
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
 
 app = Flask(__name__)
 
@@ -111,16 +112,18 @@ def chooseFeatureM():
         sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Bayes':
+        sk_model = GaussianNB()
         model = NaiveBayes()
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
+        sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Decision Tree':
         sk_model = DecisionTreeClassifier(max_depth=10)
         model = DecisionTree(chieu_sau_toida=10)
         X_train, X_test, y_train, y_test = func.train_test_split_scratch(
             X, y, test_size=0.2, shuffle=True)
-        sk_model.fit(X_train,y_train)
+        sk_model.fit(X_train, y_train)
         model.fit(X=X_train, y=y_train)
     if choosed_model == 'Random Forest':
         model = RandomForest(n_trees=20, max_depth=10)
