@@ -16,14 +16,14 @@ class NaiveBayes:
         self.phuongsai = np.zeros((sl_nhan, sl_dactrung), dtype=np.float64)
         self.tansuat_nhan = np.zeros(sl_nhan, dtype=np.float64)
 
-        for chiso, giatri_nhan in enumerate(self.nhan):
+        for idx, giatri_nhan in enumerate(self.nhan):
             #Lâý các mâũ có nhãn băng vơi giá trị của tưng nhãn
-            X_c = X[y == giatri_nhan]
-            self.trungbinh[chiso, :] = X_c.mean(axis=0)
-            self.phuongsai[chiso, :] = X_c.var(axis=0)
+            X_nhan = X[y == giatri_nhan]
+            self.trungbinh[idx, :] = X_nhan.mean(axis=0)
+            self.phuongsai[idx, :] = X_nhan.var(axis=0)
             #Xác định tân suât của nhãn đó trong tâp dư liêu
             #X_c.shape[0] sô lương mâũ của nhãn
-            self.tansuat_nhan[chiso] = X_c.shape[0] / float(sl_mau)
+            self.tansuat_nhan[idx] = X_nhan.shape[0] / float(sl_mau)
     
     def predict(self, X):
         dudoan = [self._predict(x) for x in X]
@@ -32,7 +32,7 @@ class NaiveBayes:
     def _predict(self, x):
         mang_xacsuat_nhan = []
         # Tính xăc suât hâụ nghiêm cho các nhãn
-        for idx, c in enumerate(self.nhan):
+        for idx, giatri_nhan in enumerate(self.nhan):
             xacsuat_nhan = np.sum(np.log(self._pdf(idx, x))) + np.log(self.tansuat_nhan[idx])
             mang_xacsuat_nhan.append(xacsuat_nhan)
         # Trả vê nhãn vơi giá trị xs hâụ nghiêm max
