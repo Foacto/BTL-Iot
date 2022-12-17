@@ -3,11 +3,11 @@ from collections import Counter
 
 
 def entropy(y):
-    mang_xuat_hien = Counter(y)
+    mang_xuat_hien = Counter(y) # phan tu va so lan xuat hien cua phan tu do
     entro = 0
     for i in mang_xuat_hien:
         p = mang_xuat_hien[i]/len(y)
-        p = p * np.log2(p)
+        p = p * np.log2(p) 
         if (p > 0):
             entro = entro + p
     return -entro
@@ -36,31 +36,38 @@ class DecisionTree:
         self.X_train = X
         self.y_train = y
         if not self.so_feats:
-            self.so_feats = self.X_train.shape[1]
+            self.so_feats = self.X_train.shape[1] # lay so feature
         else:
             self.so_feats = min(self.so_feats, self.X_train.shape[1])
         self.goc = self.phat_trien(X, y)
 
     def phat_trien(self, X, y, do_sau=0):
         so_mau, so_features = X.shape
-        so_nhan = len(np.unique(y))
-        # dieu kien dung
+        so_nhan = len(np.unique(y)) #so nhan co trong mang
+        # dieu kien dung neu do sau lon hon do sau toi da hoac chi con 1 nhan
         if (do_sau >= self.chieu_sau_toida or so_nhan == 1 or so_mau < self.so_nhan_nhonhat):
             gt_cuoicung = self.phan_tu_xuat_hien_nhieu_nhat(y)
             return self.La(gia_tri=gt_cuoicung)
 
         mang_feat = np.random.choice(so_features, self.so_feats, replace=False)
 
+        # tim duong di tot nhat
+
         feat_totnhat, nguong_totnhat = self.duong_di_totnhat(X, y, mang_feat)
 
+        #chia mang ra lam 2 phan
         mang_trai, mang_phai = self.chia_mang(
             X[:, feat_totnhat], nguong_totnhat)
-        la_trai = self.phat_trien(X[mang_trai, :], y[mang_trai], do_sau + 1)
-        la_phai = self.phat_trien(X[mang_phai, :], y[mang_phai], do_sau + 1)
+        la_trai = None
+        la_phai = None
+        if (len(mang_trai)!=0):
+            la_trai = self.phat_trien(X[mang_trai, :], y[mang_trai], do_sau + 1)
+        if len(mang_phai)!=0:
+            la_phai = self.phat_trien(X[mang_phai, :], y[mang_phai], do_sau + 1)
         return self.La(feat_totnhat, nguong_totnhat, la_trai, la_phai)
 
     def duong_di_totnhat(self, X, y, mang_feat):
-        gain_totnhat = -1
+        gain_totnhat = -1000
         vitri_feat_phanchia, nguong_phanchia = None, None
         for i in mang_feat:
             cot = X[:, i]
@@ -115,7 +122,7 @@ class DecisionTree:
         for i in range(len(X)):
             if X[i] <= nguong:
                 mang_trai.append(i)
-            if X[i] >= nguong:
+            if X[i] > nguong:
                 mang_phai.append(i)
         return np.array(mang_trai), np.array(mang_phai)
 
