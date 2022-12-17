@@ -88,12 +88,17 @@ class CustomRandomForest:
             nhoHonNguongIdxs, lonHonNguongIdxs = self.phanTach(
                 X[:, best_split_feat_index], best_nguong)
 
-            conBenTrai = self.phatTrienCay(
-                X[nhoHonNguongIdxs, :], y[nhoHonNguongIdxs], doSauHienTai + 1)
-            conBenPhai = self.phatTrienCay(
-                X[lonHonNguongIdxs, :], y[lonHonNguongIdxs], doSauHienTai + 1)
+
+            conBenTrai, conBenPhai = None, None
+            if len(nhoHonNguongIdxs):
+                conBenTrai = self.phatTrienCay(
+                    X[nhoHonNguongIdxs, :], y[nhoHonNguongIdxs], doSauHienTai + 1)
+            if len(lonHonNguongIdxs):
+                conBenPhai = self.phatTrienCay(
+                    X[lonHonNguongIdxs, :], y[lonHonNguongIdxs], doSauHienTai + 1)
 
             return self.Node(best_split_feat_index, best_nguong, conBenTrai, conBenPhai)
+
 
         def duyetTheoTieuChi(self, X, y, featureIndexs):
             informationGainLonNhat = -1
@@ -132,7 +137,7 @@ class CustomRandomForest:
 
         def phanTach(self, X_column, nguongTach):
             nhoHonNguongIdxs = np.argwhere(X_column <= nguongTach).flatten()
-            lonHonNguongIdxs = np.argwhere(X_column >= nguongTach).flatten()
+            lonHonNguongIdxs = np.argwhere(X_column > nguongTach).flatten()
             return nhoHonNguongIdxs, lonHonNguongIdxs
 
         def duyetCay(self, x, node):
