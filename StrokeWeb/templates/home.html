@@ -30,7 +30,7 @@
 				<div class="image-text">
 					<div class="text logo-text">
 						<span class="name">Predict Stroke</span>
-						<span class="profession">With {{model}} model</span>
+						<!-- <span class="profession">With {{model}} model</span> -->
 					</div>
 				</div>
 
@@ -40,190 +40,195 @@
 			<form class="form" action="/chooseFeatureM" method="post">
 				<div class="menu-bar">
 					<div class="menu">
-						<li class="nav-link">
-							<span class="text nav-text">Chọn Features</span>
-						</li>
-
-						<ul class="menu-links">
+						<div>
 							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 1"
-										name="feature"
-										value="heart_disease"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 1"
-										>Tiền sử bệnh tim({{cor_hd}})</label
-									>
-								</span>
+								<span class="text nav-text">Chọn Features</span>
 							</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 2"
-										name="feature"
-										value="avg_glucose_level"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 2"
-										>Lượng đường trong máu({{cor_agl}})</label
-									>
-								</span>
-							</li>
+							<ul class="menu-links">
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 1"
+											name="feature"
+											value="heart_disease"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 1"
+											>Tiền sử bệnh tim({{cor_hd}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 3"
-										name="feature"
-										value="age"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 3"
-										>Tuổi({{cor_age}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 2"
+											name="feature"
+											value="avg_glucose_level"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 2"
+											>Lượng đường trong máu({{cor_agl}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 4"
-										name="feature"
-										value="Residence_type"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 4"
-										>Khu vực sống({{cor_rt}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 3"
+											name="feature"
+											value="age"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 3"
+											>Tuổi({{cor_age}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 5"
-										name="feature"
-										value="smoking_status"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 5"
-										>Tình trạng hút thuốc({{cor_st}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 4"
+											name="feature"
+											value="Residence_type"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 4"
+											>Khu vực sống({{cor_rt}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 6"
-										name="feature"
-										value="bmi"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 6"
-										>Hệ số BMI({{cor_bmi}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 5"
+											name="feature"
+											value="smoking_status"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 5"
+											>Tình trạng hút thuốc({{cor_st}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 7"
-										name="feature"
-										value="hypertension"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 7"
-										>Tăng huyết áp({{cor_h}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 6"
+											name="feature"
+											value="bmi"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 6"
+											>Hệ số BMI({{cor_bmi}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 8"
-										name="feature"
-										value="work_type"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 8"
-										>Loại công việc({{cor_wt}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 7"
+											name="feature"
+											value="hypertension"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 7"
+											>Tăng huyết áp({{cor_h}})</label
+										>
+									</span>
+								</li>
 
-							<li class="nav-link">
-								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 9"
-										name="feature"
-										value="gender"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 9"
-										>Giới tính({{cor_gd}})</label
-									>
-								</span>
-							</li>
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 8"
+											name="feature"
+											value="work_type"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 8"
+											>Loại công việc({{cor_wt}})</label
+										>
+									</span>
+								</li>
 
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 9"
+											name="feature"
+											value="gender"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 9"
+											>Giới tính({{cor_gd}})</label
+										>
+									</span>
+								</li>
+
+								<li class="nav-link">
+									<span class="text nav-text">
+										<input
+											type="checkbox"
+											class="btn-check"
+											id="btn-check-2-outlined 10"
+											name="feature"
+											value="ever_married"
+											autocomplete="off"
+										/>
+										<label class="btn btn-outline-secondary" for="btn-check-2-outlined 10"
+											>Tình trạng kết hôn({{cor_em}})</label
+										>
+									</span>
+								</li>
+							</ul>
+						</div>
+
+						<div>
+							<li class="nav-link">
+								<span class="text nav-text">Chọn Model</span>
+							</li>
+							<ul class="menu-links">
+								<li class="nav-link">
+									<span class="text nav-text">
+										<select name="modelselect" class="selectpicker form-control">
+											{% for o in listModel %}
+											<option value="{{o}}">{{o}}</option>
+											{% endfor %}
+										</select>
+									</span>
+								</li>
+							</ul>
 							<li class="nav-link">
 								<span class="text nav-text">
-									<input
-										type="checkbox"
-										class="btn-check"
-										id="btn-check-2-outlined 10"
-										name="feature"
-										value="ever_married"
-										autocomplete="off"
-									/>
-									<label class="btn btn-outline-secondary" for="btn-check-2-outlined 10"
-										>Tình trạng kết hôn({{cor_em}})</label
-									>
+									<button type="submit" class="btn btn-success">Submit</button>
 								</span>
 							</li>
-						</ul>
-						<li class="nav-link">
-							<span class="text nav-text">Chọn Model</span>
-						</li>
-						<ul class="menu-links">
-							<li class="nav-link">
-								<span class="text nav-text">
-									<select name="modelselect" class="selectpicker form-control">
-										{% for o in listModel %}
-										<option value="{{o}}">{{o}}</option>
-										{% endfor %}
-									</select>
-								</span>
-							</li>
-						</ul>
-						<li class="nav-link">
-							<span class="text nav-text">
-								<button type="submit" class="btn btn-success">Submit</button>
-							</span>
-						</li>
+						</div>
 					</div>
 				</div>
 			</form>
