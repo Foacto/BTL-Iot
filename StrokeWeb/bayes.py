@@ -34,10 +34,10 @@ class NaiveBayes:
         mang_xacsuat_nhan = []
         # Tính xăc suât hâụ nghiêm cho các nhãn
         for idx in range(len(self.nhan)):
-            xacsuat_haunghiem = np.multiply.reduce(self.xacsuat_dieukien(idx, x)) * self.xacsuat_tiennghiem[idx]
+            xacsuat_haunghiem = np.multiply.reduce(self.xacsuat_dieukien(idx, x)) * self.xacsuat_tiennghiem[idx] 
             mang_xacsuat_nhan.append(xacsuat_haunghiem)
         # Trả vê nhãn vơi giá trị xs hâụ nghiêm max
-        # print(np.multiply.reduce([1, 2, 3]))
+        # print(np.multiply.reduce([1, 2, 3])) 
         return self.nhan[np.argmax(mang_xacsuat_nhan)]
 
     def xacsuat_dieukien(self, class_idx, x):
